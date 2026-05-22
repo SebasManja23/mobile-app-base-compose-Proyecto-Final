@@ -1,3 +1,39 @@
 <resources>
     <string name="app_name">MaizApp</string>
+
+    <!-- Pantalla Login -->
+    <string name="login_welcome">Bienvenido</string>
+    <string name="login_subtitle">Ingresa tus credenciales para continuar</string>
+    <string name="login_user_label">Usuario</string>
+    <string name="login_user_hint">Ingresa tu usuario</string>
+    <string name="login_pass_label">Contraseña</string>
+    <string name="login_pass_hint">Ingresa tu contraseña</string>
+    <string name="login_btn">Iniciar sesión</string>
+    <string name="login_no_account">¿No tienes cuenta? Regístrate aquí</string>
+
+    <!-- Pantalla Registro -->
+    <string name="reg_title">Crear cuenta</string>
+    <string name="reg_subtitle">Regístrate para comenzar</string>
+    <string name="reg_name_label">Nombre completo</string>
+    <string name="reg_name_hint">Tu nombre</string>
+    <string name="reg_email_label">Correo electrónico</string>
+    <string name="reg_email_hint">ejemplo@correo.com</string>
+    <string name="reg_user_label">Nombre de usuario</string>
+    <string name="reg_user_hint">Crea un usuario</string>
+    <string name="reg_pass_hint">Crea una contraseña</string>
+    <string name="reg_btn">Registrarse</string>
+
+    <!-- Menú Principal -->
+    <string name="menu_title">Menú principal</string>
+    <string name="menu_entradas">Entradas</string>
+    <string name="menu_entradas_sub">Registrar entradas de granos</string>
+    <string name="menu_salidas">Salidas</string>
+    <string name="menu_salidas_sub">Registrar salidas de granos</string>
+    <string name="menu_reportes">Reportes</string>
+    <string name="menu_reportes_sub">Ver reportes y estadísticas</string>
+    <string name="menu_historial">Historial</string>
+    <string name="menu_historial_sub">Consulta movimientos pasados</string>
+
+    <!-- Comunes -->
+    <string name="back">Regresar</string>
 </resources>

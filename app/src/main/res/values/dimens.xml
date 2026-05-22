@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="padding_screen">24.dp</dimen>
+    <dimen name="padding_medium">16.dp</dimen>
+    <dimen name="spacing_fields">16.dp</dimen>
+    <dimen name="logo_size">100.dp</dimen>
+    <dimen name="btn_height">56.dp</dimen>
+    <dimen name="radius_large">16.dp</dimen>
+    <dimen name="radius_medium">12.dp</dimen>
+</resources>
