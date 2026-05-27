@@ -25,5 +25,11 @@ fun MaizNavHost(navController: NavHostController) {
         composable(Screen.Register.route) {
             RegisterScreen(navController)
         }
+        composable(Screen.Entradas.route) {
+            EntradasScreen(navController)
+        }
+        composable(Screen.Salidas.route) {
+            SalidasScreen(navController)
+        }
     }
 }
