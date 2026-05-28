@@ -13,10 +13,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.NavHostController
 import com.fic.mobile_app_base_compose.R
 import com.fic.mobile_app_base_compose.ui.theme.MaizeGreen
-
+import com.fic.mobile_app_base_compose.viewmodel.MaizViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EntradasScreen(navController: NavHostController) {
+fun EntradasScreen(navController: NavHostController,viewModel: MaizViewModel) {
     Scaffold(
         topBar = {
             TopAppBar(

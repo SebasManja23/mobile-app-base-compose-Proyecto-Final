@@ -14,9 +14,9 @@ import com.fic.mobile_app_base_compose.R
 import com.fic.mobile_app_base_compose.ui.navigation.Screen
 import com.fic.mobile_app_base_compose.ui.theme.ButtonGreen
 import com.fic.mobile_app_base_compose.ui.theme.MaizeYellow
-
+import com.fic.mobile_app_base_compose.viewmodel.MaizViewModel
 @Composable
-fun LoginScreen(navController: NavHostController) {
+fun LoginScreen(navController: NavHostController,viewModel: MaizViewModel) {
     Column(
         modifier = Modifier.fillMaxSize().padding(dimensionResource(R.dimen.padding_screen)),
         horizontalAlignment = Alignment.CenterHorizontally,
