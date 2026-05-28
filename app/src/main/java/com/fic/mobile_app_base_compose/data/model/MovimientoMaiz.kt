@@ -1,14 +1,14 @@
 package com.fic.mobile_app_base_compose.data.model
 
-/**
- * Estructura de datos para el inventario.
- * Define la información básica de una entrada o salida.
- */
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity(tableName = "movimientos")
 data class MovimientoMaiz(
-    val id: Int = 0,
-    val producto: String, // Maíz, Mochote, Tamo, etc.
-    val tipo: String,     // Entrada o Salida
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    val producto: String,
+    val tipo: String,
     val cantidad: String,
-    val unidad: String,   // kg, Toneladas, Sacos
+    val unidad: String,
     val fecha: String
 )
