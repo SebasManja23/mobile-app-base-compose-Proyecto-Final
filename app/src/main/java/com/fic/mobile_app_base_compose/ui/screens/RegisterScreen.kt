@@ -12,10 +12,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.NavHostController
 import com.fic.mobile_app_base_compose.R
-
+import com.fic.mobile_app_base_compose.viewmodel.MaizViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RegisterScreen(navController: NavHostController) {
+fun RegisterScreen(navController: NavHostController,viewModel: MaizViewModel) {
     Scaffold(
         topBar = {
             TopAppBar(
