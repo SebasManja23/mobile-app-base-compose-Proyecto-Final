@@ -33,9 +33,59 @@
     <string name="menu_reportes_sub">Ver reportes y estadísticas</string>
     <string name="menu_historial">Historial</string>
     <string name="menu_historial_sub">Consulta movimientos pasados</string>
+
+    <!-- Formularios (Entradas/Salidas) -->
+    <string name="form_type_label">Tipo de producto</string>
+    <string name="form_type_hint">Selecciona el tipo de producto</string>
+    <string name="form_qty_label">Cantidad</string>
+    <string name="form_qty_hint">Ingresa la cantidad</string>
+    <string name="form_unit_label">Unidad</string>
+    <string name="form_unit_hint">Selecciona la unidad</string>
+    <string name="form_date_label">Fecha</string>
+    <string name="form_date_hint">Selecciona la fecha</string>
+    <string name="btn_reg_entrada">Registrar entrada</string>
+    <string name="btn_reg_salida">Registrar salida</string>
+
+    <!-- Pantalla Reportes -->
+    <string name="report_title">Reportes</string>
+    <string name="report_daily_movements">Movimientos del día</string>
+    <string name="report_total_inventory">Total de inventario</string>
+    <string name="report_header_product">Producto</string>
+    <string name="report_header_type">Tipo</string>
+    <string name="report_header_qty">Cantidad</string>
+    <string name="report_header_qty_total">Cantidad total</string>
+    <string name="report_header_unit">Unidad</string>
+    <string name="report_header_date">Fecha</string>
+    <string name="filter_description">Filtrar</string>
+    <string name="no_records">Sin registros</string>
+
+    <!-- Pantalla Historial -->
     <string name="history_title">Historial de Movimientos</string>
     <string name="history_empty">No hay movimientos registrados</string>
+    <string name="history_recent">Recientes</string>
+
+    <!-- Mensajes de Validación -->
+    <string name="error_login">Usuario o contraseña incorrectos</string>
+    <string name="error_empty_fields">Por favor llena todos los campos</string>
+    <string name="error_user_exists">El usuario ya existe</string>
+    <string name="success_reg">Registro exitoso</string>
+
+    <!-- Meses -->
+    <string name="month_01">Enero</string>
+    <string name="month_02">Febrero</string>
+    <string name="month_03">Marzo</string>
+    <string name="month_04">Abril</string>
+    <string name="month_05">Mayo</string>
+    <string name="month_06">Junio</string>
+    <string name="month_07">Julio</string>
+    <string name="month_08">Agosto</string>
+    <string name="month_09">Septiembre</string>
+    <string name="month_10">Octubre</string>
+    <string name="month_11">Noviembre</string>
+    <string name="month_12">Diciembre</string>
 
     <!-- Comunes -->
     <string name="back">Regresar</string>
+
+
 </resources>
