@@ -33,6 +33,8 @@
     <string name="menu_reportes_sub">Ver reportes y estadísticas</string>
     <string name="menu_historial">Historial</string>
     <string name="menu_historial_sub">Consulta movimientos pasados</string>
+    <string name="history_title">Historial de Movimientos</string>
+    <string name="history_empty">No hay movimientos registrados</string>
 
     <!-- Comunes -->
     <string name="back">Regresar</string>
