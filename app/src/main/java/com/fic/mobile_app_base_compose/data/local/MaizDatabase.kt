@@ -18,6 +18,7 @@ abstract class MaizDatabase : RoomDatabase() {
         fun getDatabase(context: Context): MaizDatabase {
             return Instance ?: synchronized(this) {
                 Room.databaseBuilder(context, MaizDatabase::class.java, "maiz_database")
+                    .fallbackToDestructiveMigration()
                     .build()
                     .also { Instance = it }
             }

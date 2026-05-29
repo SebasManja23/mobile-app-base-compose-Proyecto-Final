@@ -15,7 +15,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -32,8 +31,13 @@ import com.fic.mobile_app_base_compose.viewmodel.MaizViewModel
 fun HistoryScreen(navController: NavHostController, viewModel: MaizViewModel) {
     val movimientos by viewModel.todosLosMovimientos.collectAsState()
 
-    // Agrupamos por mes/año para el diseño
-    val movimientosAgrupados = movimientos.groupBy { it.fecha.substringAfter("/", "2025").let { it.substringBefore(" ") + "/" + it } }
+    // Agrupación robusta para evitar crashes
+    val movimientosAgrupados = movimientos.groupBy { mov ->
+        if (mov.fecha.contains("/")) {
+            val parts = mov.fecha.split("/")
+            if (parts.size >= 3) "${parts[1]}/${parts[2]}" else "Recientes"
+        } else "Recientes"
+    }
 
     Scaffold(
         topBar = {
@@ -41,7 +45,7 @@ fun HistoryScreen(navController: NavHostController, viewModel: MaizViewModel) {
                 title = { Text(stringResource(R.string.history_title), color = Color.White, fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back), tint = Color.White)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null, tint = Color.White)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaizeGreen)
@@ -54,12 +58,12 @@ fun HistoryScreen(navController: NavHostController, viewModel: MaizViewModel) {
             }
         } else {
             LazyColumn(
-                modifier = Modifier.fillMaxSize().padding(padding).padding(dimensionResource(R.dimen.padding_medium)),
-                verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_medium))
+                modifier = Modifier.fillMaxSize().padding(padding).padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 movimientosAgrupados.forEach { (mesAno, lista) ->
                     item {
-                        Text(text = mesAno, fontWeight = FontWeight.Bold, color = MaizeGreen, fontSize = 18.sp)
+                        Text(text = mesAno, fontWeight = FontWeight.Bold, color = MaizeGreen, modifier = Modifier.padding(vertical = 8.dp))
                     }
                     items(lista) { mov ->
                         HistoryItem(mov)
@@ -75,7 +79,7 @@ fun HistoryItem(movimiento: MovimientoMaiz) {
     val esEntrada = movimiento.tipo == "Entrada"
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(dimensionResource(R.dimen.radius_medium)),
+        shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
