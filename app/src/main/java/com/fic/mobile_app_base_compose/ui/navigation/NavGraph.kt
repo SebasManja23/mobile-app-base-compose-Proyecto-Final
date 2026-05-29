@@ -36,6 +36,15 @@ fun MaizNavHost(navController: NavHostController) {
         composable(Screen.Salidas.route) {
             SalidasScreen(navController, maizViewModel)
         }
+        composable(Screen.MainMenu.route) {
+            MainMenuScreen(navController)
+        }
+        composable(Screen.History.route) {
+            HistoryScreen(navController, maizViewModel)
+        }
+        composable(Screen.Reportes.route) {
+            ReportesScreen(navController, maizViewModel)
+        }
     }
 }
 
