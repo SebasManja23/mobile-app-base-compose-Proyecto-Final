@@ -1,29 +1,99 @@
 package com.fic.mobile_app_base_compose.ui.screens
 
+import android.app.DatePickerDialog
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.Assignment
+import androidx.compose.material.icons.automirrored.filled.Logout
+import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.Scale
+import androidx.compose.material.icons.filled.Agriculture
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.fic.mobile_app_base_compose.R
 import com.fic.mobile_app_base_compose.ui.theme.MaizeOrange
 import com.fic.mobile_app_base_compose.viewmodel.MaizViewModel
+import java.util.*
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SalidasScreen(navController: NavHostController,viewModel: MaizViewModel) {
+fun SalidasScreen(navController: NavHostController, viewModel: MaizViewModel) {
+    val context = LocalContext.current
+    val movimientos by viewModel.todosLosMovimientos.collectAsState()
+
+    var productoSeleccionado by remember { mutableStateOf("") }
+    var cantidad by remember { mutableStateOf("") }
+    var unidadSeleccionada by remember { mutableStateOf("") }
+    var fecha by remember { mutableStateOf("") }
+
+    val productos = listOf("Maíz", "Maíz quebrado", "Mochote", "Tamo")
+    val unidades = listOf("kg", "Toneladas", "Sacos")
+
+    // --- LÓGICA DE STOCK DISPONIBLE ---
+    val stockDisponibleKg = remember(productoSeleccionado, movimientos) {
+        if (productoSeleccionado.isEmpty()) 0.0
+        else {
+            movimientos.filter { it.producto == productoSeleccionado }.sumOf { mov ->
+                val cant = mov.cantidad.toDoubleOrNull() ?: 0.0
+                val factor = when (mov.unidad) {
+                    "Toneladas" -> 1000.0
+                    "Sacos" -> 50.0
+                    else -> 1.0
+                }
+                if (mov.tipo == "Entrada") cant * factor else -(cant * factor)
+            }
+        }
+    }
+
+    val cantidadIngresadaKg = remember(cantidad, unidadSeleccionada) {
+        val cant = cantidad.toDoubleOrNull() ?: 0.0
+        val factor = when (unidadSeleccionada) {
+            "Toneladas" -> 1000.0
+            "Sacos" -> 50.0
+            else -> 1.0
+        }
+        cant * factor
+    }
+
+    val stockInsuficiente = productoSeleccionado.isNotEmpty() && cantidad.isNotEmpty() && cantidadIngresadaKg > stockDisponibleKg
+
+    val calendar = Calendar.getInstance()
+    val datePickerDialog = DatePickerDialog(
+        context,
+        { _, year, month, dayOfMonth ->
+            fecha = String.format(Locale.getDefault(), "%02d/%02d/%d", dayOfMonth, month + 1, year)
+        },
+        calendar.get(Calendar.YEAR),
+        calendar.get(Calendar.MONTH),
+        calendar.get(Calendar.DAY_OF_MONTH)
+    )
+
+    val esFormularioValido = productoSeleccionado.isNotEmpty() && cantidad.isNotEmpty() && unidadSeleccionada.isNotEmpty() && fecha.isNotEmpty()
+    val sePuedeGuardar = esFormularioValido && !stockInsuficiente && stockDisponibleKg > 0
+
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.menu_salidas), color = Color.White, fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null, tint = Color.White)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back), tint = Color.White)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaizeOrange)
@@ -34,18 +104,111 @@ fun SalidasScreen(navController: NavHostController,viewModel: MaizViewModel) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(dimensionResource(R.dimen.padding_screen)),
+                .padding(dimensionResource(R.dimen.padding_screen))
+                .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_fields))
         ) {
-            Text(text = "Aquí irá el formulario de salidas...")
-            OutlinedTextField(value = "", onValueChange = {}, label = { Text("Producto") }, modifier = Modifier.fillMaxWidth())
-            OutlinedTextField(value = "", onValueChange = {}, label = { Text("Cantidad") }, modifier = Modifier.fillMaxWidth())
+            // Card de Información de Stock
+            if (productoSeleccionado.isNotEmpty()) {
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = if(stockDisponibleKg > 0) Color(0xFFFFF3E0) else Color(0xFFFFEBEE)
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.AutoMirrored.Filled.Assignment, contentDescription = null, tint = if(stockDisponibleKg > 0) MaizeOrange else Color.Red)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = if(stockDisponibleKg > 0) "Stock disponible: $stockDisponibleKg kg" else "Sin existencias en inventario",
+                            fontWeight = FontWeight.Bold,
+                            color = if(stockDisponibleKg > 0) Color.DarkGray else Color.Red
+                        )
+                    }
+                }
+            }
+
+            CornFormField(
+                label = stringResource(R.string.form_type_label),
+                value = productoSeleccionado,
+                placeholder = stringResource(R.string.form_type_hint),
+                icon = Icons.Default.Agriculture,
+                isDropdown = true,
+                options = productos,
+                onOptionSelected = { productoSeleccionado = it }
+            )
+
+            Column {
+                CornFormField(
+                    label = stringResource(R.string.form_qty_label),
+                    value = cantidad,
+                    placeholder = stringResource(R.string.form_qty_hint),
+                    icon = Icons.Default.Scale,
+                    keyboardType = KeyboardType.Number,
+                    onValueChange = { input -> if (input.all { it.isDigit() || it == '.' }) cantidad = input }
+                )
+                if (stockInsuficiente) {
+                    Text(
+                        text = "Cantidad excede el stock (Máx: $stockDisponibleKg kg)",
+                        color = Color.Red,
+                        fontSize = 12.sp,
+                        modifier = Modifier.padding(top = 4.dp, start = 4.dp)
+                    )
+                }
+            }
+
+            CornFormField(
+                label = stringResource(R.string.form_unit_label),
+                value = unidadSeleccionada,
+                placeholder = stringResource(R.string.form_unit_hint),
+                icon = Icons.Default.Scale,
+                isDropdown = true,
+                options = unidades,
+                onOptionSelected = { unidadSeleccionada = it }
+            )
+
+            // Campo de Fecha
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Text(text = stringResource(R.string.form_date_label), fontWeight = FontWeight.Bold, color = MaizeOrange, fontSize = 14.sp)
+                Spacer(modifier = Modifier.height(dimensionResource(R.dimen.spacing_small)))
+                OutlinedTextField(
+                    value = fecha,
+                    onValueChange = {},
+                    modifier = Modifier.fillMaxWidth().clickable { datePickerDialog.show() },
+                    enabled = false,
+                    placeholder = { Text(stringResource(R.string.form_date_hint), color = Color.Gray) },
+                    leadingIcon = { Icon(Icons.Default.CalendarMonth, contentDescription = null, tint = Color(0xFFDAA520)) },
+                    colors = TextFieldDefaults.colors(
+                        disabledContainerColor = Color.White,
+                        disabledTextColor = Color.Black,
+                        disabledIndicatorColor = Color.LightGray
+                    ),
+                    shape = RoundedCornerShape(dimensionResource(R.dimen.radius_medium))
+                )
+            }
+
+            Spacer(modifier = Modifier.height(dimensionResource(R.dimen.margin_large)))
+
             Button(
-                onClick = { /* Próximamente guardará datos */ },
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(containerColor = MaizeOrange)
+                onClick = {
+                    if (sePuedeGuardar) {
+                        viewModel.guardarMovimiento(productoSeleccionado, "Salida", cantidad, unidadSeleccionada, fecha)
+                        navController.popBackStack()
+                    }
+                },
+                modifier = Modifier.fillMaxWidth().height(dimensionResource(R.dimen.btn_height)),
+                enabled = sePuedeGuardar,
+                shape = RoundedCornerShape(dimensionResource(R.dimen.radius_medium)),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaizeOrange,
+                    disabledContainerColor = Color.LightGray
+                )
             ) {
-                Text(text = "Registrar Salida")
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = null)
+                    Spacer(modifier = Modifier.width(dimensionResource(R.dimen.spacing_small)))
+                    Text(stringResource(R.string.btn_reg_salida), fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                }
             }
         }
     }
