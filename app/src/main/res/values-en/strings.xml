@@ -1,0 +1,100 @@
+<resources>
+    <string name="app_name">MaizApp</string>
+
+    <!-- Login Screen --><string name="login_welcome">Welcome</string>
+    <string name="login_subtitle">Enter your credentials to continue</string>
+    <string name="login_user_label">Username</string>
+    <string name="login_user_hint">Enter your username</string>
+    <string name="login_pass_label">Password</string>
+    <string name="login_pass_hint">Enter your password</string>
+    <string name="login_btn">Login</string>
+    <string name="login_no_account">Don\'t have an account? Register here</string>
+
+    <!-- Register Screen -->
+    <string name="reg_title">Create account</string>
+    <string name="reg_subtitle">Sign up to get started</string>
+    <string name="reg_name_label">Full name</string>
+    <string name="reg_name_hint">Your name</string>
+    <string name="reg_email_label">Email address</string>
+    <string name="reg_email_hint">example@mail.com</string>
+    <string name="reg_user_label">Username</string>
+    <string name="reg_user_hint">Create a username</string>
+    <string name="reg_pass_hint">Create a password</string>
+    <string name="reg_btn">Sign Up</string>
+
+    <!-- Main Menu -->
+    <string name="menu_title">Main Menu</string>
+    <string name="menu_entradas">Entries</string>
+    <string name="menu_entradas_sub">Register grain entries</string>
+    <string name="menu_salidas">Exits</string>
+    <string name="menu_salidas_sub">Register grain exits</string>
+    <string name="menu_reportes">Reports</string>
+    <string name="menu_reportes_sub">View reports and statistics</string>
+    <string name="menu_historial">History</string>
+    <string name="menu_historial_sub">Check past movements</string>
+
+    <!-- Forms (Entries/Exits) -->
+    <string name="form_type_label">Product type</string>
+    <string name="form_type_hint">Select product type</string>
+    <string name="form_qty_label">Quantity</string>
+    <string name="form_qty_hint">Enter quantity</string>
+    <string name="form_unit_label">Unit</string>
+    <string name="form_unit_hint">Select unit</string>
+    <string name="form_date_label">Date</string>
+    <string name="form_date_hint">Select date</string>
+    <string name="btn_reg_entrada">Register entry</string>
+    <string name="btn_reg_salida">Register exit</string>
+
+    <!-- Reports Screen -->
+    <string name="report_title">Reports</string>
+    <string name="report_daily_movements">Daily movements</string>
+    <string name="report_total_inventory">Total inventory</string>
+    <string name="report_header_product">Product</string>
+    <string name="report_header_type">Type</string>
+    <string name="report_header_qty">Amount</string>
+    <string name="report_header_qty_total">Total amount</string>
+    <string name="report_header_unit">Unit</string>
+    <string name="report_header_date">Date</string>
+    <string name="filter_description">Filter</string>
+    <string name="no_records">No records</string>
+
+    <!-- History Screen -->
+    <string name="history_title">Movement History</string>
+    <string name="history_empty">No movements recorded</string>
+    <string name="history_recent">Recent</string>
+
+    <!-- Validation Messages -->
+    <string name="error_login">Incorrect username or password</string>
+    <string name="error_empty_fields">Please fill in all fields</string>
+    <string name="error_user_exists">Username already exists</string>
+    <string name="success_reg">Successful registration</string>
+
+    <!-- Months -->
+    <string name="month_01">January</string>
+    <string name="month_02">February</string>
+    <string name="month_03">March</string>
+    <string name="month_04">April</string>
+    <string name="month_05">May</string>
+    <string name="month_06">June</string>
+    <string name="month_07">July</string>
+    <string name="month_08">August</string>
+    <string name="month_09">September</string>
+    <string name="month_10">October</string>
+    <string name="month_11">November</string>
+    <string name="month_12">December</string>
+
+    <!-- Common -->
+    <!-- Product Values --><string name="val_maiz">Corn</string>
+    <string name="val_maiz_quebrado">Cracked Corn</string>
+    <string name="val_mochote">Mochote</string>
+    <string name="val_tamo">Corn Cob / Husk</string>
+
+    <!-- Units -->
+    <string name="unit_ton">Ton</string>
+    <string name="unit_kg">kg</string>
+
+    <!-- Buttons and Navigation -->
+    <string name="back">Back</string>
+    <string name="unit_sacks">Sacks (50kg)</string>
+    <string name="unit_tons">Tons (1000kg)</string>
+</resources>
