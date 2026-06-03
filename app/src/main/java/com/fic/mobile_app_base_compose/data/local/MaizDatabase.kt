@@ -12,8 +12,8 @@ abstract class MaizDatabase : RoomDatabase() {
     abstract fun movimientoDao(): MovimientoDao
     abstract fun usuarioDao(): UsuarioDao
 
-    companion object {
-        @Volatile
+    companion object {@Volatile
+
         private var Instance: MaizDatabase? = null
         fun getDatabase(context: Context): MaizDatabase {
             return Instance ?: synchronized(this) {
