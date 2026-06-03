@@ -28,7 +28,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.fic.mobile_app_base_compose.R
+import com.fic.mobile_app_base_compose.data.model.MovimientoTipo
 import com.fic.mobile_app_base_compose.ui.theme.MaizeGreen
+import com.fic.mobile_app_base_compose.util.SelectionOption
 import com.fic.mobile_app_base_compose.viewmodel.MaizViewModel
 import java.util.*
 
@@ -36,15 +38,32 @@ import java.util.*
 @Composable
 fun EntradasScreen(navController: NavHostController, viewModel: MaizViewModel) {
     val context = LocalContext.current
-    var productoSeleccionado by remember { mutableStateOf("") }
+    
+    var productoKey by remember { mutableStateOf("") }
     var cantidad by remember { mutableStateOf("") }
-    var unidadSeleccionada by remember { mutableStateOf("") }
+    var unidadKey by remember { mutableStateOf("") }
     var fecha by remember { mutableStateOf("") }
 
-    val productos = listOf("Maíz", "Maíz quebrado", "Mochote", "Tamo")
-    val unidades = listOf("kg", "Toneladas", "Sacos")
+    val productos = remember {
+        listOf(
+            SelectionOption(R.string.val_maiz, "Maíz"),
+            SelectionOption(R.string.val_maiz_quebrado, "Maíz quebrado"),
+            SelectionOption(R.string.val_mochote, "Mochote"),
+            SelectionOption(R.string.val_tamo, "Tamo")
+        )
+    }
+    
+    val unidades = remember {
+        listOf(
+            SelectionOption(R.string.unit_kg, "kg"),
+            SelectionOption(R.string.unit_sacks, "Sacos"),
+            SelectionOption(R.string.unit_tons, "Toneladas")
+        )
+    }
 
-    // Lógica para el Calendario
+    val productoDisplay = productos.find { it.key == productoKey }?.let { stringResource(it.labelRes) } ?: ""
+    val unidadDisplay = unidades.find { it.key == unidadKey }?.let { stringResource(it.labelRes) } ?: ""
+
     val calendar = Calendar.getInstance()
     val datePickerDialog = DatePickerDialog(
         context,
@@ -56,10 +75,9 @@ fun EntradasScreen(navController: NavHostController, viewModel: MaizViewModel) {
         calendar.get(Calendar.DAY_OF_MONTH)
     )
 
-    // Validación: ¿Está todo lleno?
-    val esFormularioValido = productoSeleccionado.isNotEmpty() &&
+    val esFormularioValido = productoKey.isNotEmpty() &&
             cantidad.isNotEmpty() &&
-            unidadSeleccionada.isNotEmpty() &&
+            unidadKey.isNotEmpty() &&
             fecha.isNotEmpty()
 
     Scaffold(
@@ -89,12 +107,14 @@ fun EntradasScreen(navController: NavHostController, viewModel: MaizViewModel) {
         ) {
             CornFormField(
                 label = stringResource(R.string.form_type_label),
-                value = productoSeleccionado,
+                value = productoDisplay,
                 placeholder = stringResource(R.string.form_type_hint),
                 icon = Icons.Default.Agriculture,
                 isDropdown = true,
-                options = productos,
-                onOptionSelected = { productoSeleccionado = it }
+                options = productos.map { context.getString(it.labelRes) },
+                onOptionSelected = { selectedLabel ->
+                    productoKey = productos.find { context.getString(it.labelRes) == selectedLabel }?.key ?: ""
+                }
             )
 
             CornFormField(
@@ -110,15 +130,16 @@ fun EntradasScreen(navController: NavHostController, viewModel: MaizViewModel) {
 
             CornFormField(
                 label = stringResource(R.string.form_unit_label),
-                value = unidadSeleccionada,
+                value = unidadDisplay,
                 placeholder = stringResource(R.string.form_unit_hint),
                 icon = Icons.Default.Scale,
                 isDropdown = true,
-                options = unidades,
-                onOptionSelected = { unidadSeleccionada = it }
+                options = unidades.map { context.getString(it.labelRes) },
+                onOptionSelected = { selectedLabel ->
+                    unidadKey = unidades.find { context.getString(it.labelRes) == selectedLabel }?.key ?: ""
+                }
             )
 
-            // Campo de Fecha
             Column(modifier = Modifier.fillMaxWidth()) {
                 Text(text = stringResource(R.string.form_date_label), fontWeight = FontWeight.Bold, color = MaizeGreen, fontSize = 14.sp)
                 Spacer(modifier = Modifier.height(dimensionResource(R.dimen.spacing_small)))
@@ -147,10 +168,10 @@ fun EntradasScreen(navController: NavHostController, viewModel: MaizViewModel) {
                 onClick = {
                     if (esFormularioValido) {
                         viewModel.guardarMovimiento(
-                            producto = productoSeleccionado,
-                            tipo = "Entrada",
+                            producto = productoKey,
+                            tipo = MovimientoTipo.ENTRADA,
                             cantidad = cantidad,
-                            unidad = unidadSeleccionada,
+                            unidad = unidadKey,
                             fecha = fecha
                         )
                         navController.popBackStack()

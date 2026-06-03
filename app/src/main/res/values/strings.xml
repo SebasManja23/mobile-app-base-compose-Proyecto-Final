@@ -86,6 +86,19 @@
 
     <!-- Comunes -->
     <string name="back">Regresar</string>
+    <!-- Valores de Productos -->
+
+    <string name="val_maiz">Maíz</string>
+    <string name="val_maiz_quebrado">Maíz quebrado</string>
+    <string name="val_mochote">Mochote</string>
+    <string name="val_tamo">Tamo</string>
+
+    <!-- Unidades -->
+    <string name="unit_ton">Ton</string>
+    <string name="unit_kg">kg</string>
+    <string name="unit_sacks">Sacos (50kg)</string>
+    <string name="unit_tons">Toneladas (1000kg)</string>
+
 
 
 </resources>

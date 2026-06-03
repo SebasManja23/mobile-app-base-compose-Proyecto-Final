@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.fic.mobile_app_base_compose.R
 import com.fic.mobile_app_base_compose.data.model.MovimientoMaiz
+import com.fic.mobile_app_base_compose.data.model.MovimientoTipo
 import com.fic.mobile_app_base_compose.ui.theme.MaizeGreen
 import com.fic.mobile_app_base_compose.ui.theme.MaizeOrange
 import com.fic.mobile_app_base_compose.viewmodel.MaizViewModel
@@ -30,12 +31,11 @@ import com.fic.mobile_app_base_compose.viewmodel.MaizViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HistoryScreen(navController: NavHostController, viewModel: MaizViewModel) {
-    // Observamos los movimientos reales de la base de datos
     val movimientos by viewModel.todosLosMovimientos.collectAsState()
 
-    // Agrupamos por mes/año dinámicamente
-    val movimientosAgrupados = movimientos.groupBy { it.fecha.substringAfter("/", "2025").let { it.substringBefore(" ") + "/" + it } }
-    // Nota: La agrupación depende del formato de fecha que uses. Asumimos DD/MM/YYYY
+    val movimientosAgrupados = movimientos.groupBy { 
+        it.fecha.substringAfter("/", "2025").let { res -> res.substringBefore(" ") + "/" + res } 
+    }
 
     Scaffold(
         topBar = {
@@ -66,11 +66,10 @@ fun HistoryScreen(navController: NavHostController, viewModel: MaizViewModel) {
                     .padding(dimensionResource(R.dimen.padding_medium)),
                 verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_medium))
             ) {
-                // Iteramos sobre los grupos (meses)
                 movimientosAgrupados.forEach { (mesAno, lista) ->
                     item {
                         Text(
-                            text = if(mesAno.contains("/")) formatGroupHeader(mesAno) else "Recientes",
+                            text = if(mesAno.contains("/")) formatGroupHeader(mesAno) else stringResource(R.string.history_recent),
                             fontWeight = FontWeight.Bold,
                             color = MaizeGreen,
                             fontSize = 18.sp,
@@ -88,7 +87,24 @@ fun HistoryScreen(navController: NavHostController, viewModel: MaizViewModel) {
 
 @Composable
 fun HistoryItem(movimiento: MovimientoMaiz) {
-    val esEntrada = movimiento.tipo == "Entrada"
+    // COMPARACIÓN COMPATIBLE: Ignora mayúsculas/minúsculas y acepta "Entrada" antigua
+    val esEntrada = movimiento.tipo.equals(MovimientoTipo.ENTRADA, ignoreCase = true) || movimiento.tipo.equals("Entrada", ignoreCase = true)
+
+    val productoTraducido = when (movimiento.producto) {
+        "Maíz" -> stringResource(R.string.val_maiz)
+        "Maíz quebrado" -> stringResource(R.string.val_maiz_quebrado)
+        "Mochote" -> stringResource(R.string.val_mochote)
+        "Tamo" -> stringResource(R.string.val_tamo)
+        else -> movimiento.producto
+    }
+
+    val unidadTraducida = when (movimiento.unidad) {
+        "kg" -> stringResource(R.string.unit_kg)
+        "Sacos" -> stringResource(R.string.unit_sacks)
+        "Toneladas" -> stringResource(R.string.unit_tons)
+        else -> movimiento.unidad
+    }
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(dimensionResource(R.dimen.radius_medium)),
@@ -109,12 +125,12 @@ fun HistoryItem(movimiento: MovimientoMaiz) {
             )
             Spacer(modifier = Modifier.width(dimensionResource(R.dimen.padding_medium)))
             Column(modifier = Modifier.weight(1f)) {
-                Text(text = movimiento.producto, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                Text(text = productoTraducido, fontWeight = FontWeight.Bold, fontSize = 16.sp)
                 Text(text = movimiento.fecha, fontSize = 12.sp, color = Color.Gray)
             }
             Column(horizontalAlignment = Alignment.End) {
                 Text(
-                    text = "${if (esEntrada) "+" else "-"} ${movimiento.cantidad} ${movimiento.unidad}",
+                    text = "${if (esEntrada) "+" else "-"} ${movimiento.cantidad} $unidadTraducida",
                     fontWeight = FontWeight.Bold,
                     color = if (esEntrada) MaizeGreen else MaizeOrange
                 )
@@ -123,29 +139,29 @@ fun HistoryItem(movimiento: MovimientoMaiz) {
     }
 }
 
+@Composable
 fun formatGroupHeader(datePart: String): String {
-    // Intenta extraer el mes de DD/MM/YYYY
-    return try {
-        val parts = datePart.split("/")
-        val month = parts[0]
-        val year = parts[1]
-        val monthName = when (month) {
-            "01" -> "Enero"
-            "02" -> "Febrero"
-            "03" -> "Marzo"
-            "04" -> "Abril"
-            "05" -> "Mayo"
-            "06" -> "Junio"
-            "07" -> "Julio"
-            "08" -> "Agosto"
-            "09" -> "Septiembre"
-            "10" -> "Octubre"
-            "11" -> "Noviembre"
-            "12" -> "Diciembre"
-            else -> "Mes $month"
-        }
-        "$monthName $year"
-    } catch (e: Exception) {
-        datePart
+    val parts = datePart.split("/")
+    if (parts.size < 2) return datePart
+
+    val month = parts[0]
+    val year = parts[1]
+
+    val monthName = when (month) {
+        "01" -> stringResource(R.string.month_01)
+        "02" -> stringResource(R.string.month_02)
+        "03" -> stringResource(R.string.month_03)
+        "04" -> stringResource(R.string.month_04)
+        "05" -> stringResource(R.string.month_05)
+        "06" -> stringResource(R.string.month_06)
+        "07" -> stringResource(R.string.month_07)
+        "08" -> stringResource(R.string.month_08)
+        "09" -> stringResource(R.string.month_09)
+        "10" -> stringResource(R.string.month_10)
+        "11" -> stringResource(R.string.month_11)
+        "12" -> stringResource(R.string.month_12)
+        else -> month
     }
+
+    return "$monthName $year"
 }

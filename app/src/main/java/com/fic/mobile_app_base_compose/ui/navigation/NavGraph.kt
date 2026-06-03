@@ -45,6 +45,7 @@ fun MaizNavHost(navController: NavHostController) {
         composable(Screen.Reportes.route) {
             ReportesScreen(navController, maizViewModel)
         }
+
     }
 }
 
