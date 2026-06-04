@@ -20,12 +20,11 @@ sealed class Screen(val route: String) {
 }
 @Composable
 fun MaizNavHost(navController: NavHostController) {
-    // Inicializamos el ViewModel con su Factory
     val maizViewModel: MaizViewModel = viewModel(factory = MaizViewModel.Factory)
 
     NavHost(navController = navController, startDestination = Screen.Login.route) {
         composable(Screen.Login.route) {
-            LoginScreen(navController, maizViewModel) // <-- Ahora sí pasamos el ViewModel
+            LoginScreen(navController, maizViewModel)
         }
         composable(Screen.Register.route) {
             RegisterScreen(navController, maizViewModel)
@@ -37,7 +36,7 @@ fun MaizNavHost(navController: NavHostController) {
             SalidasScreen(navController, maizViewModel)
         }
         composable(Screen.MainMenu.route) {
-            MainMenuScreen(navController)
+            MainMenuScreen(navController, maizViewModel) // Ahora pasamos el viewModel
         }
         composable(Screen.History.route) {
             HistoryScreen(navController, maizViewModel)
@@ -48,5 +47,3 @@ fun MaizNavHost(navController: NavHostController) {
 
     }
 }
-
-

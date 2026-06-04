@@ -19,3 +19,15 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# Retrofit rules
+-keepattributes Signature, InnerClasses, AnnotationDefault
+-dontwarn retrofit2.**
+-keep class retrofit2.** { *; }
+-dontwarn okhttp3.**
+-dontwarn okio.**
+
+# GSON rules
+-keepattributes EnclosingMethod, *Annotation*
+-keep class com.google.gson.** { *; }
+-keep class com.fic.mobile_app_base_compose.data.remote.** { *; }

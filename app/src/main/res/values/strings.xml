@@ -34,6 +34,12 @@
     <string name="menu_historial">Historial</string>
     <string name="menu_historial_sub">Consulta movimientos pasados</string>
 
+    <!-- Precio del Maíz -->
+    <string name="price_card_title">Mercado de Granos</string>
+    <string name="price_loading">Cargando precio...</string>
+    <string name="price_error">Error al cargar precio</string>
+    <string name="price_last_update">Última actualización: %s</string>
+
     <!-- Formularios (Entradas/Salidas) -->
     <string name="form_type_label">Tipo de producto</string>
     <string name="form_type_hint">Selecciona el tipo de producto</string>

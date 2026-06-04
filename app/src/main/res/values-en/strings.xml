@@ -1,7 +1,8 @@
 <resources>
     <string name="app_name">MaizApp</string>
 
-    <!-- Login Screen --><string name="login_welcome">Welcome</string>
+    <!-- Login Screen -->
+    <string name="login_welcome">Welcome</string>
     <string name="login_subtitle">Enter your credentials to continue</string>
     <string name="login_user_label">Username</string>
     <string name="login_user_hint">Enter your username</string>
@@ -32,6 +33,12 @@
     <string name="menu_reportes_sub">View reports and statistics</string>
     <string name="menu_historial">History</string>
     <string name="menu_historial_sub">Check past movements</string>
+
+    <!-- Corn Price -->
+    <string name="price_card_title">Grain Market</string>
+    <string name="price_loading">Loading price...</string>
+    <string name="price_error">Error loading price</string>
+    <string name="price_last_update">Last update: %s</string>
 
     <!-- Forms (Entries/Exits) -->
     <string name="form_type_label">Product type</string>
@@ -84,16 +91,12 @@
     <string name="month_12">December</string>
 
     <!-- Common -->
-    <!-- Product Values --><string name="val_maiz">Corn</string>
+    <string name="val_maiz">Corn</string>
     <string name="val_maiz_quebrado">Cracked Corn</string>
     <string name="val_mochote">Mochote</string>
     <string name="val_tamo">Corn Cob / Husk</string>
-
-    <!-- Units -->
     <string name="unit_ton">Ton</string>
     <string name="unit_kg">kg</string>
-
-    <!-- Buttons and Navigation -->
     <string name="back">Back</string>
     <string name="unit_sacks">Sacks (50kg)</string>
     <string name="unit_tons">Tons (1000kg)</string>

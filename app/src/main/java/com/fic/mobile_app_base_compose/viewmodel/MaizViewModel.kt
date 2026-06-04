@@ -10,14 +10,19 @@ import com.fic.mobile_app_base_compose.data.local.MovimientoDao
 import com.fic.mobile_app_base_compose.data.local.UsuarioDao
 import com.fic.mobile_app_base_compose.data.model.MovimientoMaiz
 import com.fic.mobile_app_base_compose.data.model.Usuario
+import com.fic.mobile_app_base_compose.data.remote.CornApiService
+import com.fic.mobile_app_base_compose.data.remote.CornPriceResponse
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class MaizViewModel(
     private val movimientoDao: MovimientoDao,
-    private val usuarioDao: UsuarioDao
+    private val usuarioDao: UsuarioDao,
+    private val apiService: CornApiService = CornApiService.create()
 ) : ViewModel() {
 
     val todosLosMovimientos: StateFlow<List<MovimientoMaiz>> =
@@ -27,6 +32,30 @@ class MaizViewModel(
                 started = SharingStarted.WhileSubscribed(5000),
                 initialValue = emptyList()
             )
+
+    private val _cornPrice = MutableStateFlow<CornPriceResponse?>(null)
+    val cornPrice: StateFlow<CornPriceResponse?> = _cornPrice.asStateFlow()
+
+    private val _isLoadingPrice = MutableStateFlow(false)
+    val isLoadingPrice: StateFlow<Boolean> = _isLoadingPrice.asStateFlow()
+
+    init {
+        fetchCornPrice()
+    }
+
+    fun fetchCornPrice() {
+        viewModelScope.launch {
+            _isLoadingPrice.value = true
+            try {
+                val response = apiService.getCornPrice()
+                _cornPrice.value = response
+            } catch (e: Exception) {
+                    _cornPrice.value = null
+                } finally {
+                    _isLoadingPrice.value = false
+            }
+        }
+    }
 
     fun guardarMovimiento(producto: String, tipo: String, cantidad: String, unidad: String, fecha: String) {
         viewModelScope.launch {
