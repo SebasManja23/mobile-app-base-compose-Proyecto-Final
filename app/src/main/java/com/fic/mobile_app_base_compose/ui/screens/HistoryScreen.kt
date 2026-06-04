@@ -1,5 +1,8 @@
 package com.fic.mobile_app_base_compose.ui.screens
 
+import android.content.Intent
+import android.net.Uri
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -8,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -15,6 +19,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -87,7 +92,8 @@ fun HistoryScreen(navController: NavHostController, viewModel: MaizViewModel) {
 
 @Composable
 fun HistoryItem(movimiento: MovimientoMaiz) {
-    val esEntrada = movimiento.tipo.equals(MovimientoTipo.ENTRADA, ignoreCase = true)
+    val context = LocalContext.current
+    val esEntrada = movimiento.tipo.equals(MovimientoTipo.ENTRADA, ignoreCase = true) || movimiento.tipo.equals("Entrada", ignoreCase = true)
 
     val productoTraducido = when (movimiento.producto) {
         "Maíz" -> stringResource(R.string.val_maiz)
@@ -124,7 +130,25 @@ fun HistoryItem(movimiento: MovimientoMaiz) {
             )
             Spacer(modifier = Modifier.width(dimensionResource(R.dimen.padding_medium)))
             Column(modifier = Modifier.weight(1f)) {
-                Text(text = productoTraducido, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = productoTraducido, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                    
+                    if (movimiento.latitud != null && movimiento.longitud != null) {
+                        Spacer(Modifier.width(8.dp))
+                        Icon(
+                            imageVector = Icons.Default.LocationOn,
+                            contentDescription = stringResource(R.string.map_view_description),
+                            tint = Color.Gray,
+                            modifier = Modifier
+                                .size(16.dp)
+                                .clickable {
+                                    val uri = "geo:${movimiento.latitud},${movimiento.longitud}?q=${movimiento.latitud},${movimiento.longitud}(${productoTraducido})"
+                                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(uri))
+                                    context.startActivity(intent)
+                                }
+                        )
+                    }
+                }
                 Text(text = movimiento.fecha, fontSize = 12.sp, color = Color.Gray)
             }
             Column(horizontalAlignment = Alignment.End) {

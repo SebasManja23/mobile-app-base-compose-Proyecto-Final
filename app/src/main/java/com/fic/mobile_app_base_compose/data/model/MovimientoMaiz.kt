@@ -15,5 +15,7 @@ data class MovimientoMaiz(
     val tipo: String,
     val cantidad: String,
     val unidad: String,
-    val fecha: String
+    val fecha: String,
+    val latitud: Double? = null,
+    val longitud: Double? = null
 )
