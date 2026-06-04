@@ -87,8 +87,7 @@ fun HistoryScreen(navController: NavHostController, viewModel: MaizViewModel) {
 
 @Composable
 fun HistoryItem(movimiento: MovimientoMaiz) {
-    // COMPARACIÓN COMPATIBLE: Ignora mayúsculas/minúsculas y acepta "Entrada" antigua
-    val esEntrada = movimiento.tipo.equals(MovimientoTipo.ENTRADA, ignoreCase = true) || movimiento.tipo.equals("Entrada", ignoreCase = true)
+    val esEntrada = movimiento.tipo.equals(MovimientoTipo.ENTRADA, ignoreCase = true)
 
     val productoTraducido = when (movimiento.producto) {
         "Maíz" -> stringResource(R.string.val_maiz)
