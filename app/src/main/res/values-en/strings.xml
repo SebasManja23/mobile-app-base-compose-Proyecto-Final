@@ -1,7 +1,6 @@
 <resources>
     <string name="app_name">MaizApp</string>
 
-    <!-- Login Screen -->
     <string name="login_welcome">Welcome</string>
     <string name="login_subtitle">Enter your credentials to continue</string>
     <string name="login_user_label">Username</string>
@@ -11,7 +10,6 @@
     <string name="login_btn">Login</string>
     <string name="login_no_account">Don\'t have an account? Register here</string>
 
-    <!-- Register Screen -->
     <string name="reg_title">Create account</string>
     <string name="reg_subtitle">Sign up to get started</string>
     <string name="reg_name_label">Full name</string>
@@ -23,7 +21,6 @@
     <string name="reg_pass_hint">Create a password</string>
     <string name="reg_btn">Sign Up</string>
 
-    <!-- Main Menu -->
     <string name="menu_title">Main Menu</string>
     <string name="menu_entradas">Entries</string>
     <string name="menu_entradas_sub">Register grain entries</string>
@@ -34,13 +31,13 @@
     <string name="menu_historial">History</string>
     <string name="menu_historial_sub">Check past movements</string>
 
-    <!-- Corn Price -->
     <string name="price_card_title">Grain Market</string>
     <string name="price_loading">Loading price...</string>
     <string name="price_error">Error loading price</string>
     <string name="price_last_update">Last update: %s</string>
 
-    <!-- Forms (Entries/Exits) -->
+    <string name="map_view_description">View on map</string>
+
     <string name="form_type_label">Product type</string>
     <string name="form_type_hint">Select product type</string>
     <string name="form_qty_label">Quantity</string>
@@ -51,8 +48,9 @@
     <string name="form_date_hint">Select date</string>
     <string name="btn_reg_entrada">Register entry</string>
     <string name="btn_reg_salida">Register exit</string>
+    <string name="form_stock_available">Stock available: %1$s kg</string>
+    <string name="form_stock_empty">No stock in inventory</string>
 
-    <!-- Reports Screen -->
     <string name="report_title">Reports</string>
     <string name="report_daily_movements">Daily movements</string>
     <string name="report_total_inventory">Total inventory</string>
@@ -65,18 +63,16 @@
     <string name="filter_description">Filter</string>
     <string name="no_records">No records</string>
 
-    <!-- History Screen -->
     <string name="history_title">Movement History</string>
     <string name="history_empty">No movements recorded</string>
     <string name="history_recent">Recent</string>
 
-    <!-- Validation Messages -->
     <string name="error_login">Incorrect username or password</string>
     <string name="error_empty_fields">Please fill in all fields</string>
     <string name="error_user_exists">Username already exists</string>
+    <string name="error_insufficient_stock">Amount exceeds stock (Max: %1$s kg)</string>
     <string name="success_reg">Successful registration</string>
 
-    <!-- Months -->
     <string name="month_01">January</string>
     <string name="month_02">February</string>
     <string name="month_03">March</string>
@@ -90,7 +86,6 @@
     <string name="month_11">November</string>
     <string name="month_12">December</string>
 
-    <!-- Common -->
     <string name="val_maiz">Corn</string>
     <string name="val_maiz_quebrado">Cracked Corn</string>
     <string name="val_mochote">Mochote</string>
