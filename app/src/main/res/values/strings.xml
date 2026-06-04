@@ -40,6 +40,9 @@
     <string name="price_error">Error al cargar precio</string>
     <string name="price_last_update">Última actualización: %s</string>
 
+    <!-- Geolocalización -->
+    <string name="map_view_description">Ver en el mapa</string>
+
     <!-- Formularios (Entradas/Salidas) -->
     <string name="form_type_label">Tipo de producto</string>
     <string name="form_type_hint">Selecciona el tipo de producto</string>
@@ -51,6 +54,8 @@
     <string name="form_date_hint">Selecciona la fecha</string>
     <string name="btn_reg_entrada">Registrar entrada</string>
     <string name="btn_reg_salida">Registrar salida</string>
+    <string name="form_stock_available">Stock disponible: %1$s kg</string>
+    <string name="form_stock_empty">Sin existencias en inventario</string>
 
     <!-- Pantalla Reportes -->
     <string name="report_title">Reportes</string>
@@ -74,6 +79,7 @@
     <string name="error_login">Usuario o contraseña incorrectos</string>
     <string name="error_empty_fields">Por favor llena todos los campos</string>
     <string name="error_user_exists">El usuario ya existe</string>
+    <string name="error_insufficient_stock">La cantidad excede el stock (Máx: %1$s kg)</string>
     <string name="success_reg">Registro exitoso</string>
 
     <!-- Meses -->
@@ -92,19 +98,12 @@
 
     <!-- Comunes -->
     <string name="back">Regresar</string>
-    <!-- Valores de Productos -->
-
     <string name="val_maiz">Maíz</string>
     <string name="val_maiz_quebrado">Maíz quebrado</string>
     <string name="val_mochote">Mochote</string>
     <string name="val_tamo">Tamo</string>
-
-    <!-- Unidades -->
     <string name="unit_ton">Ton</string>
     <string name="unit_kg">kg</string>
     <string name="unit_sacks">Sacos (50kg)</string>
     <string name="unit_tons">Toneladas (1000kg)</string>
-
-
-
 </resources>

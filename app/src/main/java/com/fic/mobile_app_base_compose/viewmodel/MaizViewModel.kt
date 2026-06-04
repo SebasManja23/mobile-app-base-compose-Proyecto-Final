@@ -50,17 +50,31 @@ class MaizViewModel(
                 val response = apiService.getCornPrice()
                 _cornPrice.value = response
             } catch (e: Exception) {
-                    _cornPrice.value = null
-                } finally {
-                    _isLoadingPrice.value = false
+                _cornPrice.value = null
+            } finally {
+                _isLoadingPrice.value = false
             }
         }
     }
 
-    fun guardarMovimiento(producto: String, tipo: String, cantidad: String, unidad: String, fecha: String) {
+    fun guardarMovimiento(
+        producto: String, 
+        tipo: String, 
+        cantidad: String, 
+        unidad: String, 
+        fecha: String,
+        latitud: Double? = null,
+        longitud: Double? = null
+    ) {
         viewModelScope.launch {
             val nuevo = MovimientoMaiz(
-                producto = producto, tipo = tipo, cantidad = cantidad, unidad = unidad, fecha = fecha
+                producto = producto, 
+                tipo = tipo, 
+                cantidad = cantidad, 
+                unidad = unidad, 
+                fecha = fecha,
+                latitud = latitud,
+                longitud = longitud
             )
             movimientoDao.guardar(nuevo)
         }

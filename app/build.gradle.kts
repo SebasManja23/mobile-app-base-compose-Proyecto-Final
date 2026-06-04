@@ -57,6 +57,8 @@ dependencies {
     
     implementation(libs.retrofit.main)
     implementation(libs.retrofit.gson)
+    
+    implementation(libs.play.services.location)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

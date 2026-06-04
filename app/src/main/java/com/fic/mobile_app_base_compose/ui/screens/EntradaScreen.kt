@@ -1,6 +1,11 @@
 package com.fic.mobile_app_base_compose.ui.screens
 
+import android.Manifest
+import android.annotation.SuppressLint
 import android.app.DatePickerDialog
+import android.content.pm.PackageManager
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -14,6 +19,7 @@ import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Scale
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Agriculture
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -25,24 +31,44 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import com.fic.mobile_app_base_compose.R
 import com.fic.mobile_app_base_compose.data.model.MovimientoTipo
 import com.fic.mobile_app_base_compose.ui.theme.MaizeGreen
 import com.fic.mobile_app_base_compose.util.SelectionOption
 import com.fic.mobile_app_base_compose.viewmodel.MaizViewModel
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
+import com.google.android.gms.tasks.CancellationTokenSource
 import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EntradasScreen(navController: NavHostController, viewModel: MaizViewModel) {
     val context = LocalContext.current
+    val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
     
     var productoKey by remember { mutableStateOf("") }
     var cantidad by remember { mutableStateOf("") }
     var unidadKey by remember { mutableStateOf("") }
     var fecha by remember { mutableStateOf("") }
+    
+    var latitud by remember { mutableStateOf<Double?>(null) }
+    var longitud by remember { mutableStateOf<Double?>(null) }
+    var obteniendoUbicacion by remember { mutableStateOf(false) }
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        val fineLocationGranted = permissions[Manifest.permission.ACCESS_FINE_LOCATION] ?: false
+        val coarseLocationGranted = permissions[Manifest.permission.ACCESS_COARSE_LOCATION] ?: false
+        if (fineLocationGranted || coarseLocationGranted) {
+            // Permiso concedido
+        }
+    }
 
     val productos = remember {
         listOf(
@@ -79,6 +105,40 @@ fun EntradasScreen(navController: NavHostController, viewModel: MaizViewModel) {
             cantidad.isNotEmpty() &&
             unidadKey.isNotEmpty() &&
             fecha.isNotEmpty()
+
+    @SuppressLint("MissingPermission")
+    fun obtenerUbicacionYGuardar() {
+        val hasFineLocation = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+        val hasCoarseLocation = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
+
+        if (hasFineLocation || hasCoarseLocation) {
+            obteniendoUbicacion = true
+            fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, CancellationTokenSource().token)
+                .addOnSuccessListener { location ->
+                    viewModel.guardarMovimiento(
+                        producto = productoKey,
+                        tipo = MovimientoTipo.ENTRADA,
+                        cantidad = cantidad,
+                        unidad = unidadKey,
+                        fecha = fecha,
+                        latitud = location?.latitude,
+                        longitud = location?.longitude
+                    )
+                    obteniendoUbicacion = false
+                    navController.popBackStack()
+                }
+                .addOnFailureListener {
+                    viewModel.guardarMovimiento(productoKey, MovimientoTipo.ENTRADA, cantidad, unidadKey, fecha)
+                    obteniendoUbicacion = false
+                    navController.popBackStack()
+                }
+        } else {
+            permissionLauncher.launch(arrayOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ))
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -165,32 +225,25 @@ fun EntradasScreen(navController: NavHostController, viewModel: MaizViewModel) {
             Spacer(modifier = Modifier.height(dimensionResource(R.dimen.margin_large)))
 
             Button(
-                onClick = {
-                    if (esFormularioValido) {
-                        viewModel.guardarMovimiento(
-                            producto = productoKey,
-                            tipo = MovimientoTipo.ENTRADA,
-                            cantidad = cantidad,
-                            unidad = unidadKey,
-                            fecha = fecha
-                        )
-                        navController.popBackStack()
-                    }
-                },
+                onClick = { if (esFormularioValido) obtenerUbicacionYGuardar() },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(dimensionResource(R.dimen.btn_height)),
-                enabled = esFormularioValido,
+                enabled = esFormularioValido && !obteniendoUbicacion,
                 shape = RoundedCornerShape(dimensionResource(R.dimen.radius_medium)),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaizeGreen,
                     disabledContainerColor = Color.LightGray
                 )
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.Description, contentDescription = null)
-                    Spacer(modifier = Modifier.width(dimensionResource(R.dimen.spacing_small)))
-                    Text(stringResource(R.string.btn_reg_entrada), fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                if (obteniendoUbicacion) {
+                    CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
+                } else {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.LocationOn, contentDescription = null)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(stringResource(R.string.btn_reg_entrada), fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                    }
                 }
             }
         }
