@@ -48,7 +48,11 @@ import java.util.*
 fun SalidasScreen(navController: NavHostController, viewModel: MaizViewModel) {
     val context = LocalContext.current
     val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
+    
+    // Obtenemos los movimientos y catálogos de la base de datos
     val movimientos by viewModel.todosLosMovimientos.collectAsState()
+    val productosBD by viewModel.todosLosProductos.collectAsState()
+    val unidadesBD by viewModel.todasLasUnidades.collectAsState()
 
     var productoKey by remember { mutableStateOf("") }
     var cantidad by remember { mutableStateOf("") }
@@ -59,28 +63,15 @@ fun SalidasScreen(navController: NavHostController, viewModel: MaizViewModel) {
 
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
-    ) { permissions ->
-        val fineLocationGranted = permissions[Manifest.permission.ACCESS_FINE_LOCATION] ?: false
-        val coarseLocationGranted = permissions[Manifest.permission.ACCESS_COARSE_LOCATION] ?: false
-        if (fineLocationGranted || coarseLocationGranted) {
-        }
-    }
+    ) { _ -> }
 
-    val productos = remember {
-        listOf(
-            SelectionOption(R.string.val_maiz, "Maíz"),
-            SelectionOption(R.string.val_maiz_quebrado, "Maíz quebrado"),
-            SelectionOption(R.string.val_mochote, "Mochote"),
-            SelectionOption(R.string.val_tamo, "Tamo")
-        )
+    // Convertimos datos de BD a opciones de UI
+    val productos = remember(productosBD) {
+        productosBD.map { SelectionOption(it.nombreRes, it.clave) }
     }
     
-    val unidades = remember {
-        listOf(
-            SelectionOption(R.string.unit_kg, "kg"),
-            SelectionOption(R.string.unit_sacks, "Sacos"),
-            SelectionOption(R.string.unit_tons, "Toneladas")
-        )
+    val unidades = remember(unidadesBD) {
+        unidadesBD.map { SelectionOption(it.nombreRes, it.clave) }
     }
 
     val productoDisplay = productos.find { it.key == productoKey }?.let { stringResource(it.labelRes) } ?: ""
@@ -193,9 +184,10 @@ fun SalidasScreen(navController: NavHostController, viewModel: MaizViewModel) {
                     Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
                         Icon(Icons.AutoMirrored.Filled.Assignment, contentDescription = null, tint = if(stockDisponibleKg > 0) MaizeOrange else Color.Red)
                         Spacer(modifier = Modifier.width(8.dp))
-                        val stockDisplay = if(stockDisponibleKg > 0) "Stock disponible: $stockDisponibleKg kg" else "Sin existencias en inventario"
                         Text(
-                            text = stockDisplay,
+                            text = if(stockDisponibleKg > 0) 
+                                stringResource(R.string.form_stock_available, stockDisponibleKg.toString()) 
+                                else stringResource(R.string.form_stock_empty),
                             fontWeight = FontWeight.Bold,
                             color = if(stockDisponibleKg > 0) Color.DarkGray else Color.Red
                         )
@@ -226,7 +218,7 @@ fun SalidasScreen(navController: NavHostController, viewModel: MaizViewModel) {
                 )
                 if (stockInsuficiente) {
                     Text(
-                        text = "Cantidad excede el stock (Máx: $stockDisponibleKg kg)",
+                        text = stringResource(R.string.error_insufficient_stock, stockDisponibleKg.toString()),
                         color = Color.Red,
                         fontSize = 12.sp,
                         modifier = Modifier.padding(top = 4.dp, start = 4.dp)
@@ -259,7 +251,6 @@ fun SalidasScreen(navController: NavHostController, viewModel: MaizViewModel) {
                     colors = TextFieldDefaults.colors(
                         disabledContainerColor = Color.White,
                         disabledTextColor = Color.Black,
-                        disabledPlaceholderColor = Color.Gray,
                         disabledIndicatorColor = Color.LightGray
                     ),
                     shape = RoundedCornerShape(dimensionResource(R.dimen.radius_medium))

@@ -51,40 +51,26 @@ fun EntradasScreen(navController: NavHostController, viewModel: MaizViewModel) {
     val context = LocalContext.current
     val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
     
+    val productosBD by viewModel.todosLosProductos.collectAsState()
+    val unidadesBD by viewModel.todasLasUnidades.collectAsState()
+
     var productoKey by remember { mutableStateOf("") }
     var cantidad by remember { mutableStateOf("") }
     var unidadKey by remember { mutableStateOf("") }
     var fecha by remember { mutableStateOf("") }
     
-    var latitud by remember { mutableStateOf<Double?>(null) }
-    var longitud by remember { mutableStateOf<Double?>(null) }
     var obteniendoUbicacion by remember { mutableStateOf(false) }
 
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
-    ) { permissions ->
-        val fineLocationGranted = permissions[Manifest.permission.ACCESS_FINE_LOCATION] ?: false
-        val coarseLocationGranted = permissions[Manifest.permission.ACCESS_COARSE_LOCATION] ?: false
-        if (fineLocationGranted || coarseLocationGranted) {
-            // Permiso concedido
-        }
-    }
+    ) { _ -> }
 
-    val productos = remember {
-        listOf(
-            SelectionOption(R.string.val_maiz, "Maíz"),
-            SelectionOption(R.string.val_maiz_quebrado, "Maíz quebrado"),
-            SelectionOption(R.string.val_mochote, "Mochote"),
-            SelectionOption(R.string.val_tamo, "Tamo")
-        )
+    val productos = remember(productosBD) {
+        productosBD.map { SelectionOption(it.nombreRes, it.clave) }
     }
     
-    val unidades = remember {
-        listOf(
-            SelectionOption(R.string.unit_kg, "kg"),
-            SelectionOption(R.string.unit_sacks, "Sacos"),
-            SelectionOption(R.string.unit_tons, "Toneladas")
-        )
+    val unidades = remember(unidadesBD) {
+        unidadesBD.map { SelectionOption(it.nombreRes, it.clave) }
     }
 
     val productoDisplay = productos.find { it.key == productoKey }?.let { stringResource(it.labelRes) } ?: ""
