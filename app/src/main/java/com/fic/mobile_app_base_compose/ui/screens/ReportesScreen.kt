@@ -15,6 +15,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -30,27 +31,23 @@ import java.util.Locale
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReportesScreen(navController: NavHostController, viewModel: MaizViewModel) {
+    val context = LocalContext.current
     val movimientos by viewModel.todosLosMovimientos.collectAsState()
+    val productosBD by viewModel.todosLosProductos.collectAsState()
 
     val txtEntrada = stringResource(R.string.menu_entradas)
     val txtSalida = stringResource(R.string.menu_salidas)
 
-    @Composable
-    fun traducirProducto(nombre: String): String {
-        return when (nombre) {
-            "Maíz" -> stringResource(R.string.val_maiz)
-            "Maíz quebrado" -> stringResource(R.string.val_maiz_quebrado)
-            "Mochote" -> stringResource(R.string.val_mochote)
-            "Tamo" -> stringResource(R.string.val_tamo)
-            else -> nombre
-        }
-    }
-
     val ultimosMovimientos = movimientos.take(10).map { mov ->
-        // Comparación robusta: acepta "ENTRADA", "Entrada", "entrada", etc.
-        val esEntrada = mov.tipo.trim().lowercase() == "entrada" || mov.tipo.trim().lowercase() == MovimientoTipo.ENTRADA.lowercase()
+        val esEntrada = mov.tipo.equals(MovimientoTipo.ENTRADA, ignoreCase = true) || mov.tipo.equals("Entrada", ignoreCase = true)
+        
+        // Buscamos el nombre traducido del producto basado en la BD
+        val prodTraducido = productosBD.find { it.clave == mov.producto }?.let { 
+            context.getString(it.nombreRes) 
+        } ?: mov.producto
+
         listOf(
-            traducirProducto(mov.producto),
+            prodTraducido,
             if (esEntrada) txtEntrada else txtSalida,
             mov.cantidad,
             mov.unidad,
@@ -58,21 +55,19 @@ fun ReportesScreen(navController: NavHostController, viewModel: MaizViewModel) {
         )
     }
 
-    val productosNombres = listOf("Maíz", "Maíz quebrado", "Mochote", "Tamo")
-    val inventarioCalculado = productosNombres.map { nombreProd ->
-        val totalKg = movimientos.filter { it.producto == nombreProd }.sumOf { mov ->
+    val inventarioCalculado = productosBD.map { producto ->
+        val totalKg = movimientos.filter { it.producto == producto.clave }.sumOf { mov ->
             val cant = mov.cantidad.toDoubleOrNull() ?: 0.0
             val factor = when (mov.unidad) {
                 "Toneladas" -> 1000.0
                 "Sacos" -> 50.0
                 else -> 1.0
             }
-            // Lógica de suma/resta compatible
-            val esEntrada = mov.tipo.trim().lowercase() == "entrada" || mov.tipo.trim().lowercase() == MovimientoTipo.ENTRADA.lowercase()
+            val esEntrada = mov.tipo.equals(MovimientoTipo.ENTRADA, ignoreCase = true) || mov.tipo.equals("Entrada", ignoreCase = true)
             if (esEntrada) cant * factor else -(cant * factor)
         }
 
-        val prodTraducido = traducirProducto(nombreProd)
+        val prodTraducido = context.getString(producto.nombreRes)
         if (totalKg >= 1000 || totalKg <= -1000) {
             listOf(prodTraducido, String.format(Locale.getDefault(), "%.3f", totalKg / 1000.0), stringResource(R.string.unit_ton))
         } else {
@@ -90,7 +85,7 @@ fun ReportesScreen(navController: NavHostController, viewModel: MaizViewModel) {
                     }
                 },
                 actions = {
-                    IconButton(onClick = { /* Filtro */ }) {
+                    IconButton(onClick = { }) {
                         Icon(Icons.Default.FilterAlt, contentDescription = stringResource(R.string.filter_description), tint = Color.White)
                     }
                 },

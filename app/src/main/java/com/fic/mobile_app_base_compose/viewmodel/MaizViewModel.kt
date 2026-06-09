@@ -7,8 +7,12 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.fic.mobile_app_base_compose.MaizApp
 import com.fic.mobile_app_base_compose.data.local.MovimientoDao
+import com.fic.mobile_app_base_compose.data.local.ProductoDao
+import com.fic.mobile_app_base_compose.data.local.UnidadDao
 import com.fic.mobile_app_base_compose.data.local.UsuarioDao
 import com.fic.mobile_app_base_compose.data.model.MovimientoMaiz
+import com.fic.mobile_app_base_compose.data.model.ProductoMaiz
+import com.fic.mobile_app_base_compose.data.model.UnidadMaiz
 import com.fic.mobile_app_base_compose.data.model.Usuario
 import com.fic.mobile_app_base_compose.data.remote.CornApiService
 import com.fic.mobile_app_base_compose.data.remote.CornPriceResponse
@@ -22,11 +26,29 @@ import kotlinx.coroutines.launch
 class MaizViewModel(
     private val movimientoDao: MovimientoDao,
     private val usuarioDao: UsuarioDao,
+    private val productoDao: ProductoDao,
+    private val unidadDao: UnidadDao,
     private val apiService: CornApiService = CornApiService.create()
 ) : ViewModel() {
 
     val todosLosMovimientos: StateFlow<List<MovimientoMaiz>> =
         movimientoDao.obtenerTodos()
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5000),
+                initialValue = emptyList()
+            )
+
+    val todosLosProductos: StateFlow<List<ProductoMaiz>> =
+        productoDao.obtenerTodos()
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5000),
+                initialValue = emptyList()
+            )
+
+    val todasLasUnidades: StateFlow<List<UnidadMaiz>> =
+        unidadDao.obtenerTodas()
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(5000),
@@ -58,20 +80,20 @@ class MaizViewModel(
     }
 
     fun guardarMovimiento(
-        producto: String, 
-        tipo: String, 
-        cantidad: String, 
-        unidad: String, 
+        producto: String,
+        tipo: String,
+        cantidad: String,
+        unidad: String,
         fecha: String,
         latitud: Double? = null,
         longitud: Double? = null
     ) {
         viewModelScope.launch {
             val nuevo = MovimientoMaiz(
-                producto = producto, 
-                tipo = tipo, 
-                cantidad = cantidad, 
-                unidad = unidad, 
+                producto = producto,
+                tipo = tipo,
+                cantidad = cantidad,
+                unidad = unidad,
                 fecha = fecha,
                 latitud = latitud,
                 longitud = longitud
@@ -98,7 +120,9 @@ class MaizViewModel(
                 val application = (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as MaizApp)
                 MaizViewModel(
                     application.database.movimientoDao(),
-                    application.database.usuarioDao()
+                    application.database.usuarioDao(),
+                    application.database.productoDao(),
+                    application.database.unidadDao()
                 )
             }
         }
