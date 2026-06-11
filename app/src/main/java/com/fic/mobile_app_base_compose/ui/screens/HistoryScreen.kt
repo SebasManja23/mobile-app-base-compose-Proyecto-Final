@@ -29,6 +29,8 @@ import androidx.navigation.NavHostController
 import com.fic.mobile_app_base_compose.R
 import com.fic.mobile_app_base_compose.data.model.MovimientoMaiz
 import com.fic.mobile_app_base_compose.data.model.MovimientoTipo
+import com.fic.mobile_app_base_compose.data.model.ProductoMaiz
+import com.fic.mobile_app_base_compose.data.model.UnidadMaiz
 import com.fic.mobile_app_base_compose.ui.theme.MaizeGreen
 import com.fic.mobile_app_base_compose.ui.theme.MaizeOrange
 import com.fic.mobile_app_base_compose.viewmodel.MaizViewModel
@@ -37,6 +39,8 @@ import com.fic.mobile_app_base_compose.viewmodel.MaizViewModel
 @Composable
 fun HistoryScreen(navController: NavHostController, viewModel: MaizViewModel) {
     val movimientos by viewModel.todosLosMovimientos.collectAsState()
+    val productosBD by viewModel.todosLosProductos.collectAsState()
+    val unidadesBD by viewModel.todasLasUnidades.collectAsState()
 
     val movimientosAgrupados = movimientos.groupBy { 
         it.fecha.substringAfter("/", "2025").let { res -> res.substringBefore(" ") + "/" + res } 
@@ -82,7 +86,7 @@ fun HistoryScreen(navController: NavHostController, viewModel: MaizViewModel) {
                         )
                     }
                     items(lista) { movimiento ->
-                        HistoryItem(movimiento)
+                        HistoryItem(movimiento, productosBD, unidadesBD)
                     }
                 }
             }
@@ -91,24 +95,21 @@ fun HistoryScreen(navController: NavHostController, viewModel: MaizViewModel) {
 }
 
 @Composable
-fun HistoryItem(movimiento: MovimientoMaiz) {
+fun HistoryItem(
+    movimiento: MovimientoMaiz, 
+    productosBD: List<ProductoMaiz>, 
+    unidadesBD: List<UnidadMaiz>
+) {
     val context = LocalContext.current
     val esEntrada = movimiento.tipo.equals(MovimientoTipo.ENTRADA, ignoreCase = true) || movimiento.tipo.equals("Entrada", ignoreCase = true)
 
-    val productoTraducido = when (movimiento.producto) {
-        "Maíz" -> stringResource(R.string.val_maiz)
-        "Maíz quebrado" -> stringResource(R.string.val_maiz_quebrado)
-        "Mochote" -> stringResource(R.string.val_mochote)
-        "Tamo" -> stringResource(R.string.val_tamo)
-        else -> movimiento.producto
-    }
+    val productoTraducido = productosBD.find { it.clave == movimiento.producto }?.let { 
+        stringResource(it.nombreRes) 
+    } ?: movimiento.producto
 
-    val unidadTraducida = when (movimiento.unidad) {
-        "kg" -> stringResource(R.string.unit_kg)
-        "Sacos" -> stringResource(R.string.unit_sacks)
-        "Toneladas" -> stringResource(R.string.unit_tons)
-        else -> movimiento.unidad
-    }
+    val unidadTraducida = unidadesBD.find { it.clave == movimiento.unidad }?.let { 
+        stringResource(it.nombreRes) 
+    } ?: movimiento.unidad
 
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -152,8 +153,9 @@ fun HistoryItem(movimiento: MovimientoMaiz) {
                 Text(text = movimiento.fecha, fontSize = 12.sp, color = Color.Gray)
             }
             Column(horizontalAlignment = Alignment.End) {
+                val cantidadTexto = "${if (esEntrada) "+" else "-"} ${movimiento.cantidad} $unidadTraducida"
                 Text(
-                    text = "${if (esEntrada) "+" else "-"} ${movimiento.cantidad} $unidadTraducida",
+                    text = cantidadTexto,
                     fontWeight = FontWeight.Bold,
                     color = if (esEntrada) MaizeGreen else MaizeOrange
                 )
